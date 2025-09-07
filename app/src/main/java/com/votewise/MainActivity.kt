@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
 
     private val homeViewModelFactory: ViewModelProvider.Factory by lazy {
-        HomeViewModelFactory(candidateRepository, UserPreferencesRepository(applicationContext), applicationContext)
+        HomeViewModelFactory(candidateRepository)
     }
 
     private val homeViewModel: HomeViewModel by viewModels { homeViewModelFactory }

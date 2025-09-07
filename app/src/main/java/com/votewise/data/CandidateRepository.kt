@@ -1,7 +1,6 @@
 package com.votewise.data
 
 import android.util.Log
-import com.votewise.app.BuildConfig
 import com.votewise.data.model.CivicInfoResponse
 import com.votewise.data.api.CivicInfoApiService
 import com.votewise.data.model.Result
@@ -10,7 +9,7 @@ class CandidateRepository(
     private val civicInfoApiService: CivicInfoApiService
 ) {
 
-    suspend fun getVoterInfo(address: String): Result<CivicInfoResponse> {
+    suspend fun getVoterInfo(address: String, apiKey: String): Result<CivicInfoResponse> {
         if (address.isEmpty()) {
             return Result.Error(Exception("Address cannot be empty."))
         }
@@ -18,7 +17,7 @@ class CandidateRepository(
         return try {
             val civicInfoResponse = civicInfoApiService.getVoterInfo(
                 address = address,
-                apiKey = BuildConfig.GOOGLE_CIVIC_API_KEY
+                key = apiKey
             )
             Log.d("CandidateRepository", "Received voter info response: $civicInfoResponse")
             Result.Success(civicInfoResponse)

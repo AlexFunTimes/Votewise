@@ -18,7 +18,7 @@
         <!-- TODO: Replace "YOUR_API_KEY" with your actual Google Places API key. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY" />
+            android:value="AIzaSyD85CpbzN8HfkwZNcvT2xuQXpuF5RPPKsY" />
 
         <activity
             android:name="com.votewise.MainActivity"

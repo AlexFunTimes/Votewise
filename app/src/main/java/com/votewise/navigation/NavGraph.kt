@@ -14,8 +14,6 @@ import com.votewise.data.CandidateRepository
 import com.votewise.data.UserPreferencesRepository
 import com.votewise.ui.viewmodel.HomeViewModel
 import com.votewise.ui.viewmodel.HomeViewModelFactory
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.net.PlacesClient
 
 @Composable
 fun NavGraph(candidateRepository: CandidateRepository) {
@@ -38,7 +36,7 @@ fun NavGraph(candidateRepository: CandidateRepository) {
             OnboardingScreen(navController = navController)
         }
         composable(route = Screen.Home.route) {
-            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(candidateRepository, userPreferencesRepository, context))
+            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(candidateRepository))
             HomeScreen(navController = navController, homeViewModel = homeViewModel)
         }
         composable(route = Screen.CandidateDetail.route + "/{candidateId}") { backStackEntry ->

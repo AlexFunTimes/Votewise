@@ -8,14 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.votewise.app.R
 import com.votewise.ui.components.AddressAutocompleteTextField
 import com.votewise.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddressInputScreen(
@@ -35,6 +35,8 @@ fun AddressInputScreen(
 ) {
     var addressText by remember { mutableStateOf("") }
     var selectedPlace by remember { mutableStateOf<Place?>(null) }
+    val isLoading by homeViewModel.isLoading.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -59,40 +61,27 @@ fun AddressInputScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            AddressAutocompleteTextField(
-                onQueryChanged = { query ->
-                    addressText = query
-                    selectedPlace = null
-                },
-                onPlaceSelected = { place ->
-                    selectedPlace = place
-                    addressText = place.address.orEmpty()
-                },
-                onSearchClick = {
-                    selectedPlace?.let {
-                        homeViewModel.findCandidates(it.address.orEmpty())
-                        onNavigateToHome()
+            if (isLoading) {
+                CircularProgressIndicator()
+            } else {
+                AddressAutocompleteTextField(
+                    onQueryChanged = { query ->
+                        addressText = query
+                        selectedPlace = null
+                    },
+                    onPlaceSelected = { place ->
+                        selectedPlace = place
+                        addressText = place.address.orEmpty()
+                    },
+                    onSearchClick = {
+                        selectedPlace?.let {
+                            scope.launch {
+                                homeViewModel.findCandidatesByFullAddress(addressText).join()
+                                onNavigateToHome()
+                            }
+                        }
                     }
-                }
-            )
-
-            Button(
-                onClick = {
-                    selectedPlace?.let {
-                        homeViewModel.findCandidates(it.address.orEmpty())
-                        onNavigateToHome()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                enabled = selectedPlace != null,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
                 )
-            ) {
-                Text("Find Candidates")
             }
         }
     }
