@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +25,6 @@ import com.google.android.libraries.places.api.model.Place
 import com.votewise.app.R
 import com.votewise.ui.components.AddressAutocompleteTextField
 import com.votewise.ui.viewmodel.HomeViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun AddressInputScreen(
@@ -36,7 +34,6 @@ fun AddressInputScreen(
     var addressText by remember { mutableStateOf("") }
     var selectedPlace by remember { mutableStateOf<Place?>(null) }
     val isLoading by homeViewModel.isLoading.collectAsState()
-    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -75,10 +72,7 @@ fun AddressInputScreen(
                     },
                     onSearchClick = {
                         selectedPlace?.let {
-                            scope.launch {
-                                homeViewModel.findCandidatesByFullAddress(addressText).join()
-                                onNavigateToHome()
-                            }
+                            homeViewModel.findCandidatesByFullAddress(addressText, onNavigateToHome)
                         }
                     }
                 )

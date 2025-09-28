@@ -3,44 +3,16 @@ package com.votewise
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.lifecycle.ViewModelProvider
-import coil.compose.rememberAsyncImagePainter
-import com.votewise.data.CandidateRepository
-import com.votewise.data.api.CivicInfoApiService
-import com.votewise.data.api.RetrofitInstance
-import com.votewise.ui.viewmodel.HomeViewModel
-import com.votewise.ui.theme.VotewiseTheme
-import com.votewise.navigation.NavGraph
-import com.votewise.ui.viewmodel.AuthViewModel
-import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import com.google.android.libraries.places.api.Places
 import com.votewise.app.BuildConfig
-import com.votewise.data.UserPreferencesRepository
-import com.votewise.ui.viewmodel.HomeViewModelFactory
-import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
-import com.votewise.app.R
+import com.votewise.ui.navigation.MainNavigation
+import com.votewise.ui.theme.VotewiseTheme
 
 class MainActivity : ComponentActivity() {
-
-    private val civicInfoApiService: CivicInfoApiService by lazy {
-        RetrofitInstance.civicInfoApi
-    }
-
-    private val candidateRepository: CandidateRepository by lazy {
-        CandidateRepository(civicInfoApiService)
-    }
-
-    private val authViewModel: AuthViewModel by viewModels()
-
-    private val homeViewModelFactory: ViewModelProvider.Factory by lazy {
-        HomeViewModelFactory(candidateRepository)
-    }
-
-    private val homeViewModel: HomeViewModel by viewModels { homeViewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,14 +24,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             VotewiseTheme {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(R.drawable.votewise_pioneers_words),
-                        contentDescription = null, // Or provide a proper content description
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                    NavGraph(candidateRepository = candidateRepository)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainNavigation()
                 }
             }
         }

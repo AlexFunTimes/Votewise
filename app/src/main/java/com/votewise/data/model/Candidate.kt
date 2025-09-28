@@ -11,5 +11,17 @@ data class Candidate(
     val imageUrl: String?,
     val office: String?,
     val district: String?,
-    val electionYear: Int?
+    val electionYear: Int?,
+    val status: CandidateStatus?,
+    val electionType: ElectionType?,
+    val consistencyScore: Double?
 )
+
+enum class CandidateStatus {
+    DECLARED,
+    EXPLORATORY,
+    QUALIFIED,
+    WITHDRAWN,
+    DEFEATED,
+    ELECTED
+}
