@@ -13,3 +13,16 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# API Keys and Sensitive Configuration
+gradle.properties
+local.properties
+*.keystore
+*.jks
+key.properties
+secrets.properties
+
+# Additional security
+.env
+.env.local
+.env.*.local

@@ -1,9 +1,19 @@
 
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.plugin.compose")
     id("androidx.room")
+}
+
+// Load local.properties file
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
@@ -22,10 +32,11 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "VOTEWISE_FEC_API_KEY", "\"" + ((project.findProperty("VOTEWISE_FEC_API_KEY") as String?) ?: "") + "\"")
-        buildConfigField("String", "GOOGLE_CIVIC_API_KEY", "\"" + ((project.findProperty("GOOGLE_CIVIC_API_KEY") as String?) ?: "NO_KEY") + "\"")
-        manifestPlaceholders["GOOGLE_CIVIC_API_KEY"] = (project.findProperty("GOOGLE_CIVIC_API_KEY") as String?) ?: "NO_KEY"
-        manifestPlaceholders["MAPS_API_KEY"] = (project.findProperty("MAPS_API_KEY") as String?) ?: "NO_KEY"
+        buildConfigField("String", "VOTEWISE_FEC_API_KEY", "\"" + (localProperties.getProperty("VOTEWISE_FEC_API_KEY") ?: "") + "\"")
+        buildConfigField("String", "GOOGLE_CIVIC_API_KEY", "\"" + (localProperties.getProperty("GOOGLE_CIVIC_API_KEY") ?: "NO_KEY") + "\"")
+        buildConfigField("String", "MAPS_API_KEY", "\"" + (localProperties.getProperty("MAPS_API_KEY") ?: "NO_KEY") + "\"")
+        manifestPlaceholders["GOOGLE_CIVIC_API_KEY"] = localProperties.getProperty("GOOGLE_CIVIC_API_KEY") ?: "NO_KEY"
+        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY") ?: "NO_KEY"
     }
 
     room {
@@ -107,7 +118,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
-    // Google Play Services
+    // Google Play Services - Places API (New)
     implementation("com.google.android.libraries.places:places:3.3.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")

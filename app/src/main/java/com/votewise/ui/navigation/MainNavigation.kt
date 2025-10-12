@@ -13,7 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.votewise.navigation.Screen
 import com.votewise.ui.screens.*
 
 @Composable
@@ -29,11 +28,15 @@ fun MainNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = Screen.AddressInput.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) {
-                HomeScreen(navController = navController)
+            composable(Screen.AddressInput.route) {
+                AddressInputScreen(
+                    onNavigateToMatches = { address ->
+                        navController.navigate(Screen.Matches.createRoute(address))
+                    }
+                )
             }
             
             composable(Screen.Search.route) {
@@ -41,7 +44,7 @@ fun MainNavigation() {
             }
             
             composable(Screen.Matches.route) {
-                MatchesScreen(navController = navController)
+                MatchesScreen(navController = navController, address = "")
             }
             
             composable(Screen.Profile.route) {
@@ -92,7 +95,6 @@ private fun BottomNavigationBar(
     navController: androidx.navigation.NavController
 ) {
     val items = listOf(
-        BottomNavItem("Home", Icons.Default.Home, Screen.Home.route),
         BottomNavItem("Search", Icons.Default.Search, Screen.Search.route),
         BottomNavItem("Matches", Icons.Default.Favorite, Screen.Matches.route),
         BottomNavItem("Profile", Icons.Default.Person, Screen.Profile.route)
@@ -127,4 +129,20 @@ data class BottomNavItem(
     val route: String
 )
 
-
+sealed class Screen(val route: String) {
+    object AddressInput : Screen("address_input")
+    object ApiKeyDiagnostic : Screen("api_key_diagnostic")
+    object Search : Screen("search")
+    object Matches : Screen("matches/{address}") {
+        fun createRoute(address: String) = "matches/$address"
+    }
+    object Profile : Screen("profile")
+    object CandidateDetail : Screen("candidate_detail")
+    object Quiz : Screen("quiz")
+    object QuizResults : Screen("quiz_results")
+    object Settings : Screen("settings")
+    object Privacy : Screen("privacy")
+    object Notifications : Screen("notifications")
+    object Subscription : Screen("subscription")
+    object About : Screen("about")
+}

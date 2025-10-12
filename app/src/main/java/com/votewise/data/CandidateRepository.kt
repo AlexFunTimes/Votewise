@@ -18,8 +18,9 @@ class CandidateRepository(
         Log.d("CandidateRepository", "Fetching voter info for address: $address")
         return withContext(Dispatchers.IO) {
             try {
-                val civicInfoResponse = civicInfoApiService.getVoterInfo(
+                val civicInfoResponse = civicInfoApiService.getVoterInfoByAddress(
                     address = address,
+                    electionId = "2000", // Default to test election
                     key = apiKey
                 )
                 Log.d("CandidateRepository", "Received voter info response: $civicInfoResponse")

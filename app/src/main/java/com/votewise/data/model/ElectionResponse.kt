@@ -1,6 +1,7 @@
 package com.votewise.data.model
 
 data class ElectionResponse(
-    val elections: List<Election>
+    val kind: String? = null,
+    val elections: List<Election>? = null
 )
 

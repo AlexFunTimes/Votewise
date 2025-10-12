@@ -8,12 +8,12 @@ import retrofit2.http.Query
 
 interface CivicInfoApiService {
     @GET("elections")
-    suspend fun getElections(@Query("key") apiKey: String): ElectionResponse
+    suspend fun getElections(@Query("key") apiKey: String = BuildConfig.GOOGLE_CIVIC_API_KEY): ElectionResponse
 
     @GET("voterinfo")
-    suspend fun getVoterInfo(
+    suspend fun getVoterInfoByAddress(
         @Query("address") address: String,
-        @Query("electionId") electionId: String? = null,
-        @Query("key") key: String
+        @Query("electionId") electionId: String?,
+        @Query("key") key: String = BuildConfig.GOOGLE_CIVIC_API_KEY
     ): CivicInfoResponse
 }

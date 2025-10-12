@@ -2,44 +2,59 @@ package com.votewise.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.votewise.ui.viewmodel.HomeViewModel
+import com.votewise.ui.screens.MatchesViewModelFactory
 import com.votewise.ui.screens.AddressInputScreen
-import com.votewise.ui.screens.HomeScreen
+import com.votewise.ui.screens.MatchesScreen
+import com.votewise.ui.screens.ApiKeyDiagnosticScreen
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.votewise.data.api.CivicInfoApiService
+import com.votewise.data.api.RetrofitClient
 
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    homeViewModel: HomeViewModel
+    navController: NavHostController
 ) {
+    val civicInfoApiService = RetrofitClient.instance.create(CivicInfoApiService::class.java)
+    val matchesViewModelFactory = MatchesViewModelFactory(civicInfoApiService)
+
     NavHost(
         navController = navController,
         startDestination = Screen.AddressInput.route,
         modifier = modifier.fillMaxSize()
     ) {
-        // Explicitly define parameters for composable to be absolutely clear
-        composable(route = Screen.AddressInput.route) {
-            AddressInputScreen(
-                onNavigateToHome = {
-                    navController.navigate(Screen.Home.route)
-                },
-                homeViewModel = homeViewModel
+        composable(route = Screen.ApiKeyDiagnostic.route) {
+            ApiKeyDiagnosticScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
             )
         }
-        composable(route = Screen.Home.route) {
-            HomeScreen(
-                homeViewModel = homeViewModel,
-                navController = navController
+        composable(route = Screen.AddressInput.route) {
+            AddressInputScreen(
+                onNavigateToMatches = { address ->
+                    navController.navigate(Screen.Matches.createRoute(address))
+                },
+                onNavigateToDiagnostics = {
+                    navController.navigate(Screen.ApiKeyDiagnostic.route)
+                }
+            )
+        }
+        composable(
+            route = Screen.Matches.route,
+            arguments = listOf(navArgument("address") { type = NavType.StringType })
+        ) { backStackEntry ->
+            MatchesScreen(
+                navController = navController,
+                address = backStackEntry.arguments?.getString("address") ?: "",
+                viewModel = viewModel(factory = matchesViewModelFactory)
             )
         }
     }
-}
-
-sealed class Screen(val route: String) {
-    object AddressInput : Screen("address_input")
-    object Home : Screen("home")
 }
